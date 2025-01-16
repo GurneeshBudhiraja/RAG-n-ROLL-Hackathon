@@ -1,6 +1,6 @@
 import streamlit as st
-from components.sidebar import streamlit_sidebar
-from components.agriculture_school import agriculture_school
+from app.components.sidebar import streamlit_sidebar
+from app.components.agriculture_school import agriculture_school
 
 
 def main():

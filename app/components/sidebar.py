@@ -1,5 +1,5 @@
 import streamlit as st
-from constants.sidebar_constants import (
+from app.constants.sidebar_constants import (
     supported_languages,
     features_dict,
     footer_content,
