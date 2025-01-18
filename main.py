@@ -1,6 +1,11 @@
 import streamlit as st
+import app.components.agriculture_school
+import app.components.information_access
 from app.components.sidebar import streamlit_sidebar
-from app.components.agriculture_school import agriculture_school
+import app.components
+from snowflake.snowpark.context import get_active_session
+
+
 
 
 def main():
@@ -14,7 +19,9 @@ def main():
     [selected_feature_id, selected_language] = streamlit_sidebar()
 
     if selected_feature_id == "krishi_pathshala":
-        agriculture_school(selected_language)
+        app.components.agriculture_school.agriculture_school(selected_language)
+    if selected_feature_id == "scheme_support":
+        app.components.information_access.information_access(selected_language)
 
 
 if __name__ == "__main__":

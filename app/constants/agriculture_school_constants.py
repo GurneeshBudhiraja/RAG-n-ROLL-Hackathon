@@ -4,6 +4,14 @@ agri_school_content = {
         "description": "Empowering farmers through knowledge.",
         "input_placeholder": "Ask your question here...",
         "surprise_me_button": "Surprise Me!",
+        "education_options": (
+            "Choosing the Right Crop",
+            "Efficient Irrigation",
+            "Managing Your Farm Finances",
+            "Post-Harvest Handling",
+            "Healthy Soil, Healthy Crops",
+            "Sustainable Farming Practices",
+        ),
     },
     "हिंदी": {
         "title": "कृषि पाठशाला में आपका स्वागत है📚",

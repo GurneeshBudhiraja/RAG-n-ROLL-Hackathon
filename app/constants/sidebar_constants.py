@@ -1,7 +1,7 @@
 # Menu options based on the language
 features_dict = {
     "English": [
-        {"feat_id": "scheme_support", "feat_name": "Schemes & Support"},
+        {"feat_id": "scheme_support", "feat_name": "Information Access (Schemes & Support)"},
         {"feat_id": "doc_decoder", "feat_name": "Document Decoder"},
         {"feat_id": "ask_kisan", "feat_name": "Ask Kisan Sahayak"},
         {
@@ -10,13 +10,13 @@ features_dict = {
         },
     ],
     "हिंदी": [
-        {"feat_id": "scheme_support", "feat_name": "योजनाएं और समर्थन"},
+        {"feat_id": "scheme_support", "feat_name": "जानकारी एक्सेस (योजनाएं और समर्थन)"},
         {"feat_id": "doc_decoder", "feat_name": "दस्तावेज़ डिकोडर"},
         {"feat_id": "ask_kisan", "feat_name": "किसान सहायक से पूछें"},
         {"feat_id": "krishi_pathshala", "feat_name": "कृषि पाठशाला"},
     ],
     "বাংলা": [
-        {"feat_id": "scheme_support", "feat_name": "योजना এবং সহায়তা"},
+        {"feat_id": "scheme_support", "feat_name": "তথ্য অ্যাক্সেস (योजना এবং সহায়তা)"},
         {"feat_id": "doc_decoder", "feat_name": "ডকুমেন্ট ডিকোডার"},
         {"feat_id": "ask_kisan", "feat_name": "কৃষক সহায়ককে জিজ্ঞাসা করুন"},
         {"feat_id": "krishi_pathshala", "feat_name": "কৃষি পাঠশালা"},
