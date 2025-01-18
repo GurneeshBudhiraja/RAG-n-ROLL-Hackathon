@@ -139,3 +139,4 @@ pyvenv.cfg
 bin/
 include/
 
+todo.*
