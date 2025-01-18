@@ -1,6 +1,4 @@
 import streamlit as st
-from snowflake.snowpark.context import get_active_session
-from snowflake.core import Root
 from app.constants.agriculture_school_constants import agri_school_content
 from app.utils.suprise_me_util import get_surprise_content
 
@@ -52,7 +50,6 @@ def agriculture_school(selected_language):
     )
 
     if user_question:
-
         if user_question:
             st.markdown(f"**User asked:**\n{user_question}")
         else:
