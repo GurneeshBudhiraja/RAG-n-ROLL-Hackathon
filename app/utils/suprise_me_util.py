@@ -1,8 +1,9 @@
-import os
-from mistralai import Mistral
 from dotenv import load_dotenv
-import json
 import random
+from snowflake.cortex import Complete
+from app.utils.snowflake_utils import create_snowflake_connection
+import re
+
 
 load_dotenv()
 
@@ -47,37 +48,38 @@ def get_surprise_content(lang: str):
     This function is used to get the random content about farming from the Mistral AI model
     """
     try:
-
+        create_snowflake_connection(
+            database="INFORMATION_ACCESS",
+            cortex_search_service="INFORMATION_ACCESS_SEARCH_SERVICE_CS",
+        )
         topic = get_random_topic(topics=topics)
 
-        api_key = os.environ["MISTRAL_API_KEY"]
-        model = "mistral-large-2407"
-
-        # Creates mistral client
-        client = Mistral(
-            api_key=api_key,
+        model_response = Complete(
+            "mistral-7b",  # Model used for suprise me content
+            f"Tell me something informative about farming that could help educate the farmers in developing countries.It needs to be informative content related to the {topic} useful for farmers which could enhance the knowledge of the farmers in the following {lang}. At the end return a short heading and short content which is no longer than 2 sentences in the following JSON format: {{'heading':'<model heading response>','content':'<model content response>'}}",
         )
+        modified_model_response = extract_heading_and_content(model_response)
+        return modified_model_response
 
-        chat_response = client.chat.complete(
-            model=model,
-            messages=[
-                {
-                    "role": "user",
-                    "content": f"Tell me something informative about farming that could help educate the farmers in developing countries.It needs to be informative content related to the {topic} useful for farmers which could enhance the knowledge of the farmers in the following {lang}. At the end return a short heading and short content which is no longer than 2 sentences in the following JSON format: {{'heading':'<model heading response>','content':'<model content response>'}}",
-                },
-            ],
-            temperature=1,
-            random_seed=10000,
-            response_format={
-                "type": "json_object",
-            },
-        )
-
-        # Converts the chat_response from JSON to Python dict
-        model_response = json.loads(chat_response.choices[0].message.content)
-        return model_response
     except Exception as e:
         print("Error:", e)
+        return {"heading": "", "content": ""}
+
+
+import re
+
+
+def extract_heading_and_content(text):
+    """
+    Extracts the 'heading' and 'content' values from a string using regular expressions.
+    """
+    pattern = r"{'heading':\s*'([^']*)',\s*'content':\s*'([^']*)'}"
+    match = re.search(pattern, text)
+    if match:
+        heading = match.group(1)
+        content = match.group(2)
+        return {"heading": heading, "content": content}
+    else:
         return {"heading": "", "content": ""}
 
 

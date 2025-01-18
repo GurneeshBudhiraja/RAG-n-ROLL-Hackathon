@@ -39,11 +39,11 @@ def agriculture_school(selected_language):
         if not educational_content["heading"] or not educational_content["content"]:
             st.error("Error fetching content. Please try again later.")
             return
-        st.header(educational_content["heading"], anchor=None)
-        st.write(educational_content["content"])
+        st.markdown(f"#### {educational_content['heading'].strip()}")
+        st.markdown(f"###### {educational_content['content'].strip()}")
 
     # --- Topic Selection ---
-    st.markdown("###### Or select a topic to learn about:")
+    st.markdown("##### Or select a topic to learn about:")
     selected_topic = st.selectbox(
         "Select the topic",
         lang_content["education_options"],
