@@ -1,6 +1,7 @@
 import streamlit as st
 from app.constants.agriculture_school_constants import agri_school_content
 from app.utils.suprise_me_util import get_surprise_content
+from app.cortex_search.agriculture_school_search import agriculture_school_search
 
 
 def agriculture_school(selected_language):
@@ -19,7 +20,7 @@ def agriculture_school(selected_language):
         }
         .chat-container {
             display: flex;
-            align-items: center;
+            align-items: start;
             margin-bottom: 16px;
             color: black;
             gap: 2px;
@@ -90,37 +91,53 @@ def agriculture_school(selected_language):
         st.markdown(f"###### {educational_content['content'].strip()}")
 
     if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "user", "content": "what is the best irrigation method"},
-            {
-                "role": "ai",
-                "content": "This is an ai generated message for the irrigation methond",
-            },
-        ]
-    for message in st.session_state.messages:
-        if message["role"] == "user":
-            st.markdown(
-                f"""
-                <div class="chat-container chat-user">
-                    <div>👨‍💻</div>
-                    <div class="chat-content">{(message["content"])}</div>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        else:
+        st.session_state.messages = []
 
-            st.markdown(
-                f"""
+    if user_question and not selected_topic:
+        st.error("Please select one of the categroy")
+    elif user_question and selected_topic:
+        st.session_state.messages.append({"role": "user", "content": user_question})
+
+        for message in st.session_state.messages:
+            if message["role"] == "user":
+                st.markdown(
+                    f"""
+                    <div class="chat-container chat-user">
+                        <div>👨‍💻</div>
+                        <div class="chat-content">{(message["content"])}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            else:
+
+                st.markdown(
+                    f"""
+                    <div class="chat-container chat-ai">
+                        <div>🌾</div>
+                        <div class="chat-content">{message["content"]}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+        response_placeholder = st.empty()
+
+        model_response = agriculture_school_search(
+            user_question=user_question,
+            question_category=selected_topic,
+            selected_langauge=selected_language,
+            chat_history=st.session_state.messages,
+        )
+        st.session_state.messages.append({"role": "ai", "content": model_response})
+        response_placeholder.markdown(
+            f"""
                 <div class="chat-container chat-ai">
                     <div>🌾</div>
-                    <div class="chat-content">{message["content"]}</div>
+                    <div class="chat-content">{model_response}</div>
                 </div>
-                """,
-                unsafe_allow_html=True,
-            )
+            """,
+            unsafe_allow_html=True,
+        )
 
-    if user_question:
-        st.session_state.messages.append({"role": "user", "content": user_question})
-        st.rerun()
     return
