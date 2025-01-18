@@ -16,11 +16,6 @@ def information_access(selected_language):
 
     st.write(information_access_content[selected_language]["description"])
 
-    user_question = st.text_input(
-        information_access_content[selected_language]["input_prompt"],
-        placeholder=information_access_content[selected_language]["input_placeholder"],
-    )
-
     # Selectbox
     categories = [
         "Government Schemes",
@@ -36,8 +31,13 @@ def information_access(selected_language):
         ],
     )
 
-    # --- Display Information ---
+    user_question = st.text_input(
+        information_access_content[selected_language]["input_prompt"],
+        placeholder=information_access_content[selected_language]["input_placeholder"],
+        key="enabled_input",
+    )
     if user_question:
+
         if user_question:
             if not selected_category:
                 st.error(information_access_content[selected_language]["error_message"])

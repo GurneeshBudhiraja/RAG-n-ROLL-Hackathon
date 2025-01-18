@@ -6,8 +6,6 @@ import app.components
 from snowflake.snowpark.context import get_active_session
 
 
-
-
 def main():
     # --- Page Configuration ---
     st.set_page_config(
