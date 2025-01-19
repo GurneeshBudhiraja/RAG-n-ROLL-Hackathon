@@ -140,3 +140,4 @@ bin/
 include/
 
 todo.*
+.DS_Store
