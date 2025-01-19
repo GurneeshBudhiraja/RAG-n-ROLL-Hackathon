@@ -42,13 +42,21 @@ def information_access(selected_language):
             if not selected_category:
                 st.error(information_access_content[selected_language]["error_message"])
             else:
-                model_response = information_access_search(
-                    user_question=user_question,
-                    question_category=selected_category,
-                    selected_langauge=selected_language,
-                )
+                model_response = ""
+                with st.spinner(
+                    information_access_content[selected_language]["spinner_text"]
+                ):
+                    model_response = information_access_search(
+                        user_question=user_question,
+                        question_category=selected_category,
+                        selected_langauge=selected_language,
+                    )
                 if not model_response:
-                    st.error("No results found.")
+                    st.error(
+                        information_access_content[selected_language][
+                            "model_response_error"
+                        ]
+                    )
                 else:
                     st.markdown(
                         information_access_content[selected_language]["question_header"]

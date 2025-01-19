@@ -5,7 +5,8 @@ import snowflake.connector
 import string, random
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-
+from app.constants.document_decoder_constants import document_decoder_content
+import time
 
 load_dotenv()
 
@@ -21,27 +22,31 @@ connection_object = snowflake.connector.connect(
 cursor = connection_object.cursor()
 
 
-def FileUploader():
-    uploaded_file = st.file_uploader("Upload your PDF document", type="pdf")
+def FileUploader(selected_language: str):
+    uploaded_file = st.file_uploader(
+        document_decoder_content[selected_language]["pdf_label"], type="pdf"
+    )
     return uploaded_file
 
 
-def LanguageSelector():
+def LanguageSelector(selected_language: str):
     language_options = ["English", "Hindi", "Bengali"]
     selected_language = st.selectbox(
-        "Choose a language for document processing:", language_options, index=None
+        document_decoder_content[selected_language]["language_selector_label"],
+        language_options,
+        index=None,
     )
     return selected_language
 
 
-def first_part():
+def first_part(selected_language: str):
     try:
         table_name = st.session_state.state["table_name"]
         (col1, _) = st.columns([1, 1])
         (col2, _) = st.columns([1, 1])
 
         with col1:
-            uploaded_file = FileUploader()
+            uploaded_file = FileUploader(selected_language=selected_language)
             if uploaded_file:
                 st.session_state.state["file_uploaded"] = uploaded_file
 
@@ -50,13 +55,19 @@ def first_part():
                 st.session_state.state["file_uploaded"]
                 and not st.session_state.state["language_selected"]
             ):
-                selected_language = LanguageSelector()
-                if st.button("Submit"):
-                    st.session_state.state["language_selected"] = selected_language
+                doc_selected_language = LanguageSelector(
+                    selected_language=selected_language
+                )
+                if st.button(
+                    document_decoder_content[selected_language]["submit_button"]
+                ):
+                    st.session_state.state["language_selected"] = doc_selected_language
                     st.session_state.state["processing"] = True
 
         if st.session_state.state["processing"]:
-            with st.spinner("Processing your document..."):
+            with st.spinner(
+                document_decoder_content[selected_language]["processing_docs"]
+            ):
                 upload_document(table_name=table_name)
 
             st.session_state.state["processing"] = False
@@ -65,7 +76,7 @@ def first_part():
             st.rerun()
     except Exception as e:
         print(f"Error in first_part: {str(e)}")
-        st.error("An error occurred. Please try again.")
+        st.error(document_decoder_content[selected_language]["error"])
 
 
 # This is the starter function

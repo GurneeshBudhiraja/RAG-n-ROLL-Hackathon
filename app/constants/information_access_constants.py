@@ -9,6 +9,8 @@ information_access_content = {
         "error_message": "Please select one category",
         "question_header": "#### Question:",
         "answer_header": "#### Answer:",
+        "model_response_error": "Sorry, I am unable to answer this question. Please try again later.",
+        "spinner_text": "Getting the answer...",
     },
     "हिंदी": {
         "header": "जानकारी एक्सेस (योजनाएं और समर्थन)",
@@ -20,6 +22,8 @@ information_access_content = {
         "error_message": "कृपया एक श्रेणी चुनें",
         "question_header": "प्रश्न:",
         "answer_header": "#### उत्तर:",
+        "model_response_error": "क्षमा करें, मैं इस प्रश्न का उत्तर देने में असमर्थ हूं। कृपया बाद में प्रयास करें।",
+        "spinner_text": "उत्तर प्राप्त किया जा रहा है....",
     },
     "বাংলা": {
         "header": "তথ্য অ্যাক্সেস (योजना এবং সহায়তা)",
@@ -31,5 +35,7 @@ information_access_content = {
         "error_message": "অনুগ্রহ করে একটি বিভাগ নির্বাচন করুন",
         "question_header": "প্রশ্ন:",
         "answer_header": "#### উত্তর:",
+        "model_response_error": "দুঃখিত, আমি এই প্রশ্নের উত্তর দিতে অক্ষম। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+        "spinner_text": "উত্তর পাওয়া হচ্ছে...",
     },
 }

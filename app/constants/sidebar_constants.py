@@ -5,21 +5,21 @@ features_dict = {
             "feat_id": "scheme_support",
             "feat_name": "Information Access (Schemes & Support)",
         },
-        {"feat_id": "doc_decoder", "feat_name": "Document Decoder"},
         {
             "feat_id": "krishi_pathshala",
             "feat_name": "Krishi Pathshala (Agriculture School)",
         },
+        {"feat_id": "doc_decoder", "feat_name": "Document Decoder"},
     ],
     "हिंदी": [
         {"feat_id": "scheme_support", "feat_name": "जानकारी एक्सेस (योजनाएं और समर्थन)"},
-        {"feat_id": "doc_decoder", "feat_name": "दस्तावेज़ डिकोडर"},
         {"feat_id": "krishi_pathshala", "feat_name": "कृषि पाठशाला"},
+        {"feat_id": "doc_decoder", "feat_name": "दस्तावेज़ डिकोडर"},
     ],
     "বাংলা": [
         {"feat_id": "scheme_support", "feat_name": "তথ্য অ্যাক্সেস (योजना এবং সহায়তা)"},
-        {"feat_id": "doc_decoder", "feat_name": "ডকুমেন্ট ডিকোডার"},
         {"feat_id": "krishi_pathshala", "feat_name": "কৃষি পাঠশালা"},
+        {"feat_id": "doc_decoder", "feat_name": "ডকুমেন্ট ডিকোডার"},
     ],
 }
 

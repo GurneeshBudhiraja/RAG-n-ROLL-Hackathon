@@ -75,17 +75,17 @@ def agriculture_school(selected_language):
     suprise_me_button = st.button(lang_content["surprise_me_button"])
 
     # --- Topic Selection ---
-    st.markdown("##### Or select a topic to learn about:")
+    st.markdown(lang_content["topic_selection_heading"])
     selected_topic = st.selectbox(
-        "Select the topic",
+        lang_content["topic_selection_label"],
         lang_content["education_options"],
         index=None,
-        placeholder="Choose a topic...",
+        placeholder=lang_content["topic_selection_placeholder"],
     )
     if suprise_me_button:
         educational_content = get_surprise_content(lang_content)
         if not educational_content["heading"] or not educational_content["content"]:
-            st.error("Error fetching content. Please try again later.")
+            st.error(lang_content["model_response_error"])
             return
         st.markdown(f"#### {educational_content['heading'].strip()}")
         st.markdown(f"###### {educational_content['content'].strip()}")
@@ -94,7 +94,7 @@ def agriculture_school(selected_language):
         st.session_state.messages = []
 
     if user_question and not selected_topic:
-        st.error("Please select one of the categroy")
+        st.error(lang_content["error_message"])
     elif user_question and selected_topic:
         st.session_state.messages.append({"role": "user", "content": user_question})
 
@@ -122,22 +122,27 @@ def agriculture_school(selected_language):
                 )
 
         response_placeholder = st.empty()
+        model_response = ""
+        with st.spinner(lang_content["spinner_text"]):
+            model_response = agriculture_school_search(
+                user_question=user_question,
+                question_category=selected_topic,
+                selected_langauge=selected_language,
+                chat_history=st.session_state.messages,
+            )
 
-        model_response = agriculture_school_search(
-            user_question=user_question,
-            question_category=selected_topic,
-            selected_langauge=selected_language,
-            chat_history=st.session_state.messages,
-        )
-        st.session_state.messages.append({"role": "ai", "content": model_response})
-        response_placeholder.markdown(
-            f"""
-                <div class="chat-container chat-ai">
-                    <div>🌾</div>
-                    <div class="chat-content">{model_response}</div>
-                </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        if not model_response:
+            st.error(lang_content["model_response_error"])
+        else:
+            st.session_state.messages.append({"role": "ai", "content": model_response})
+            response_placeholder.markdown(
+                f"""
+                    <div class="chat-container chat-ai">
+                        <div>🌾</div>
+                        <div class="chat-content">{model_response}</div>
+                    </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
     return

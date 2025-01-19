@@ -37,7 +37,7 @@ def information_access_search(user_question, question_category, selected_langaug
         prompt = f"""
         You will act as a helpful assistant that will answer the user_question based on the provided data. If the answer is not there in the provided data politely decline the request. 
         
-        The answer should be natural and based on the user_question needs, the answer could be long or short. Do not add a follow up question in the answer. Only provide the answer to the user_question. The user has selected the category {question_category} and then asked the question.
+        The answer should be natural and based on the user_question needs, the answer could be long or short. Do not add a follow up question in the answer. Only provide the answer to the user_question. The user has selected the category {question_category} and then asked the question. FYI, the user wants an answer in {selected_langauge} irrespective of the language of the question so please be aware of that.
         
         
         If the data that you got is not related to the question:
