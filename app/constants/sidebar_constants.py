@@ -3,7 +3,7 @@ features_dict = {
     "English": [
         {
             "feat_id": "scheme_support",
-            "feat_name": "Information Access (Schemes & Support)",
+            "feat_name": "Information Center (Schemes & Support)",
         },
         {
             "feat_id": "krishi_pathshala",
@@ -40,8 +40,8 @@ footer_content = {
 We provide:
 
 * **Easy access to information:** Learn about government schemes, connect with helpful organizations, and get expert advice.
-* **Document assistance:**  Understand complex legal documents and protect yourself from fraud.
 * **Educational resources:**  Explore modern farming techniques and improve your skills.
+* **Document assistance:**  Understand complex legal documents and protect yourself from fraud.
 
 **Our mission** is to empower farmers with knowledge and technology, helping them thrive in the ever-evolving world of agriculture.
     """,

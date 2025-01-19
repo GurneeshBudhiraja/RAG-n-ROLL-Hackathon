@@ -1,6 +1,6 @@
 information_access_content = {
     "English": {
-        "header": "Information Access (Schemes & Support)",
+        "header": "Information Center (Schemes & Support)",
         "description": "Find information on government schemes, helpful organizations, and contact details for agricultural experts.",
         "input_placeholder": "eg: Tell me the helpline number for farmers.",
         "input_prompt": "Message to Kisan Sahayak 🌾",
