@@ -12,7 +12,7 @@ load_dotenv()
 connection_object = snowflake.connector.connect(
     user=os.environ.get("SNOWFLAKE_USER"),
     password=os.environ.get("SNOWFLAKE_PASSWORD"),
-    account="QPB44910",
+    account=os.environ.get("SNOWFLAKE_USER_ACCOUNT"),
     warehouse=os.environ.get("WAREHOUSE"),
     database="DOCUMENT_DECODER",
     schema="DATA",
@@ -35,33 +35,37 @@ def LanguageSelector():
 
 
 def first_part():
-    table_name = st.session_state.state["table_name"]
-    (col1, _) = st.columns([1, 1])
-    (col2, _) = st.columns([1, 1])
+    try:
+        table_name = st.session_state.state["table_name"]
+        (col1, _) = st.columns([1, 1])
+        (col2, _) = st.columns([1, 1])
 
-    with col1:
-        uploaded_file = FileUploader()
-        if uploaded_file:
-            st.session_state.state["file_uploaded"] = uploaded_file
+        with col1:
+            uploaded_file = FileUploader()
+            if uploaded_file:
+                st.session_state.state["file_uploaded"] = uploaded_file
 
-    with col2:
-        if (
-            st.session_state.state["file_uploaded"]
-            and not st.session_state.state["language_selected"]
-        ):
-            selected_language = LanguageSelector()
-            if st.button("Submit"):
-                st.session_state.state["language_selected"] = selected_language
-                st.session_state.state["processing"] = True
+        with col2:
+            if (
+                st.session_state.state["file_uploaded"]
+                and not st.session_state.state["language_selected"]
+            ):
+                selected_language = LanguageSelector()
+                if st.button("Submit"):
+                    st.session_state.state["language_selected"] = selected_language
+                    st.session_state.state["processing"] = True
 
-    if st.session_state.state["processing"]:
-        with st.spinner("Processing your document..."):
-            upload_document(table_name=table_name)
+        if st.session_state.state["processing"]:
+            with st.spinner("Processing your document..."):
+                upload_document(table_name=table_name)
 
-        st.session_state.state["processing"] = False
-        st.session_state.state["chat_ready"] = True
-        st.session_state.state["first_part_visible"] = False
-        st.rerun()
+            st.session_state.state["processing"] = False
+            st.session_state.state["chat_ready"] = True
+            st.session_state.state["first_part_visible"] = False
+            st.rerun()
+    except Exception as e:
+        print(f"Error in first_part: {str(e)}")
+        st.error("An error occurred. Please try again.")
 
 
 # This is the starter function
@@ -70,29 +74,35 @@ def upload_document(table_name):
     Saves the uploaded file to a temporary directory
     and uploads it to Snowflake transient table.
     """
-    print("TABLE_NAME", table_name)
+    try:
+        print("TABLE_NAME", table_name)
 
-    # Gets and save the file on the machine
-    streamlit_file = st.session_state.state["file_uploaded"]
-    local_file_path = os.path.join("temp_dir", streamlit_file.name)
-    os.makedirs("temp_dir", exist_ok=True)
+        # Gets and save the file on the machine
+        streamlit_file = st.session_state.state["file_uploaded"]
+        local_file_path = os.path.join("temp_dir", streamlit_file.name)
+        os.makedirs("temp_dir", exist_ok=True)
 
-    with open(local_file_path, "wb") as f:
-        f.write(streamlit_file.read())
+        with open(local_file_path, "wb") as f:
+            f.write(streamlit_file.read())
 
-    print("================ Uploading file ===========================")
-    upload_pdf_with_metadata(table_name=table_name, pdf_path=local_file_path)
+        print("================ Uploading file ===========================")
+        upload_pdf_with_metadata(table_name=table_name, pdf_path=local_file_path)
 
-    # Creates the cortex search service
-    print("================ creating cortex search service ===========================")
-    cortex_search_response = create_cortex_service(table_name=table_name)
-    print("Cortex search response:", cortex_search_response)
-    print(
-        "================ END :: creating cortex search service :: END ==========================="
-    )
+        # Creates the cortex search service
+        print(
+            "================ creating cortex search service ==========================="
+        )
+        cortex_search_response = create_cortex_service(table_name=table_name)
+        print("Cortex search response:", cortex_search_response)
+        print(
+            "================ END :: creating cortex search service :: END ==========================="
+        )
 
-    # remove the file from the system
-    os.remove(local_file_path)
+        # remove the file from the system
+        os.remove(local_file_path)
+    except Exception as e:
+        print(f"Error uploading document: {str(e)}")
+        return False
 
 
 def upload_pdf_with_metadata(table_name: str, pdf_path: str):
@@ -170,11 +180,3 @@ def generate_random_string(length=18):
 if __name__ == "__main__":
     table_name = generate_random_string()
     upload_document(table_name=table_name)
-
-    # print(table_name)
-    # response = upload_pdf_with_metadata(
-    #     table_name=table_name, pdf_path="temp_dir/testing_doc.pdf"
-    # )
-    # print("Upload pdf response:", response)
-    # response = create_cortex_service(table_name=table_name)
-    # print("Cortex service response:", response)

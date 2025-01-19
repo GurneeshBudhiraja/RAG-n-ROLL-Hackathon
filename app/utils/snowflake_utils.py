@@ -26,7 +26,7 @@ def create_snowflake_connection(database: str, cortex_search_service: str):
         connection_object = snowflake.connector.connect(
             user=os.environ.get("SNOWFLAKE_USER"),
             password=os.environ.get("SNOWFLAKE_PASSWORD"),
-            account="QPB44910",
+            account=os.environ.get("SNOWFLAKE_USER_ACCOUNT"),
             warehouse=os.environ.get("WAREHOUSE"),
             database=database,
             schema=os.environ.get("SCHEMA"),
@@ -53,3 +53,39 @@ def get_similar_chunks_search_service(
     }
     response = svc.search(user_question, columns, filter=filter_obj, limit=limit)
     return (response).model_dump_json()
+
+
+connection_object = snowflake.connector.connect(
+    user=os.environ.get("SNOWFLAKE_USER"),
+    password=os.environ.get("SNOWFLAKE_PASSWORD"),
+    account=os.environ.get("SNOWFLAKE_USER_ACCOUNT"),
+    warehouse=os.environ.get("WAREHOUSE"),
+    database="DOCUMENT_DECODER",
+    schema="DATA",
+)
+
+
+cursor = connection_object.cursor()
+
+
+def delete_document(table_name=""):
+    try:
+        table_drop_query = f"""
+        DROP TABLE IF EXISTS {table_name};
+        """
+        cortex_search_drop_query = f"""
+        DROP CORTEX SEARCH SERVICE IF EXISTS {table_name}_CS;
+        """
+
+        print("================ Dropping the table ===================")
+        response = cursor.execute(table_drop_query)
+        print("================ Dropped the table ===================", response)
+        print("================ Dropping the cortex search service ===================")
+        response = cursor.execute(cortex_search_drop_query)
+        print(
+            "================ Dropped the cortex search service ===================",
+            response,
+        )
+    except Exception as e:
+        print(f"Error deleting document: {str(e)}")
+        return False

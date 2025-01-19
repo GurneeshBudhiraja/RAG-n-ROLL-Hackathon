@@ -1,6 +1,7 @@
 import streamlit as st
 from app.components.document_decoder_component import first_part, second_part
 from app.components.document_decoder_component.first_part import generate_random_string
+from app.utils.snowflake_utils import delete_document
 
 
 def document_decoder(selected_language: str = "English"):
@@ -11,16 +12,15 @@ def document_decoder(selected_language: str = "English"):
             "language_selected": False,
             "processing": False,
             "chat_ready": False,
-            "messages": [
-                {"role": "ai", "content": "This is the ai message"},
-                {"role": "user", "content": "This is the user message"},
-            ],
+            "messages": [],
             "first_part_visible": True,
             "table_name": generate_random_string(),
+            "first_time": True,
         }
 
     # Reset button
     if st.button("Reset"):
+        delete_document(st.session_state.state["table_name"])
         st.session_state.state = {
             "file_uploaded": False,
             "language_selected": False,
@@ -29,6 +29,7 @@ def document_decoder(selected_language: str = "English"):
             "messages": [],
             "first_part_visible": True,
             "table_name": generate_random_string(),
+            "first_time": True,
         }
         st.rerun()
 

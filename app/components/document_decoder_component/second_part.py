@@ -2,6 +2,7 @@ import streamlit as st
 from app.cortex_search.document_decoder_search import document_decoder_search
 
 
+# Styles for the chat interface
 def get_chat_style():
     return st.markdown(
         """
@@ -60,6 +61,7 @@ def get_chat_style():
     )
 
 
+# Iterate on the messages list and show the past messages
 def messages_util():
     messages = st.session_state.state["messages"]
     for message in messages:
@@ -86,13 +88,49 @@ def messages_util():
 
 
 def second_part():
-    # Gets the chat styles
     get_chat_style()
+    # Runs for the very first time
+    if st.session_state.state["first_time"]:
+        st.session_state.state["messages"].append(
+            {
+                "role": "ai",
+                "content": "Generating the summary of the uploaded documents",
+            }
+        )
+        messages_util()
+        response_placeholder = st.empty()
+        model_response = ""
+        with st.spinner("Generating a summary for the uploaded file..."):
+            model_response = document_decoder_search(
+                user_question="Generate a brief summary covering all the important aspects of the provided data.",
+                chat_history=[],
+                first_time=True,
+                selected_langauge=st.session_state.state["language_selected"],
+                cortex_search_service=f"{st.session_state.state['table_name']}_CS",
+            )
 
+        if model_response == "":
+            model_response = (
+                "Sorry, I am unable to answer this question. Please try again later."
+            )
+        st.session_state.state["messages"].append(
+            {"role": "ai", "content": model_response}
+        )
+        response_placeholder.markdown(
+            f"""
+                <div class="chat-container chat-ai">
+                    <div>🌾</div>
+                    <div class="chat-content">{model_response}</div>
+                </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.session_state.state["first_time"] = False
     # Chat input
     user_query = st.chat_input("Ask a question about your documents...")
 
     if user_query:
+        # Appending the user message
         st.session_state.state["messages"].append(
             {"role": "user", "content": user_query}
         )
@@ -100,14 +138,18 @@ def second_part():
         messages_util()
 
         response_placeholder = st.empty()
-
-        model_response = document_decoder_search(
-            user_question=user_query,
-            selected_langauge=st.session_state.state["language_selected"],
-            chat_history=st.session_state.state["messages"],
-            cortex_search_service=f"{st.session_state.state['table_name']}_CS",
-        )
-
+        model_response = ""
+        with st.spinner("Getting the answer..."):
+            model_response = document_decoder_search(
+                user_question=user_query,
+                selected_langauge=st.session_state.state["language_selected"],
+                chat_history=st.session_state.state["messages"],
+                cortex_search_service=f"{st.session_state.state['table_name']}_CS",
+            )
+        if model_response == "":
+            model_response = (
+                "Sorry, I am unable to answer this question. Please try again later."
+            )
         st.session_state.state["messages"].append(
             {"role": "ai", "content": model_response}
         )
