@@ -1,6 +1,7 @@
 import streamlit as st
 import app.components.agriculture_school
 import app.components.information_access
+from app.components.document_decoder_component.document_decoder import document_decoder
 from app.components.sidebar import streamlit_sidebar
 import app.components
 from snowflake.snowpark.context import get_active_session
@@ -20,6 +21,8 @@ def main():
         app.components.agriculture_school.agriculture_school(selected_language)
     if selected_feature_id == "scheme_support":
         app.components.information_access.information_access(selected_language)
+    if selected_feature_id == "doc_decoder":
+        document_decoder(selected_language)
 
 
 if __name__ == "__main__":
