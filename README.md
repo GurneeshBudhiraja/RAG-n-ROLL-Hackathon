@@ -1,4 +1,4 @@
-# Kisan Sahayak: Your Digital Companion for Agriculture
+# Kisan Sahayak: Your Digital Companion for Agriculture 🌾
 
 **Built for the RAG 'n' ROLL Amp up Search with Snowflake & Mistral Hackathon**
 
