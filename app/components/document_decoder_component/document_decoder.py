@@ -49,9 +49,6 @@ def document_decoder(selected_language: str = "English"):
     ):
         second_part.second_part()
 
-    # TODO: remove the below and uncomment the above
-    # second_part.second_part()
-
 
 if __name__ == "__main__":
     document_decoder()
