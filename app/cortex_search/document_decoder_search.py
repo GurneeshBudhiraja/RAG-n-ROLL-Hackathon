@@ -70,7 +70,7 @@ def generate_user_query(user_question, chat_history=[]):
         </chat_history>
 
         I want you understand the context of the conversation using the chat_history and understand the user_question and then generate a completed user question so that the new question covers all the aspects and meaning of the original question. Do not mention any other text in the response except from the new generated query. DO NOT MENTION WORDS LIKE chat_history, user_question in the final response. Only the new generated query should be returned. Do not elaborate the question provided only mention in the final question what has been initially asked by the user.
-      """
+    """
     model_response = Complete("mistral-large", prompt)
     return model_response
 
