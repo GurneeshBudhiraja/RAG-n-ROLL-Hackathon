@@ -1,5 +1,6 @@
 import streamlit as st
 from app.components.document_decoder_component import first_part, second_part
+from app.components.document_decoder_component.first_part import generate_random_string
 
 
 def document_decoder(selected_language: str = "English"):
@@ -15,6 +16,7 @@ def document_decoder(selected_language: str = "English"):
                 {"role": "user", "content": "This is the user message"},
             ],
             "first_part_visible": True,
+            "table_name": generate_random_string(),
         }
 
     # Reset button
@@ -26,6 +28,7 @@ def document_decoder(selected_language: str = "English"):
             "chat_ready": False,
             "messages": [],
             "first_part_visible": True,
+            "table_name": generate_random_string(),
         }
         st.rerun()
 
