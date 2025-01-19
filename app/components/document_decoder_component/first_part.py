@@ -3,6 +3,9 @@ import os
 from dotenv import load_dotenv
 import snowflake.connector
 import string, random
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 
 load_dotenv()
 
@@ -14,6 +17,8 @@ connection_object = snowflake.connector.connect(
     database="DOCUMENT_DECODER",
     schema="DATA",
 )
+
+cursor = connection_object.cursor()
 
 
 def FileUploader():
@@ -30,7 +35,6 @@ def LanguageSelector():
 
 
 def first_part():
-    print("Session state\n", st.session_state.state)
     table_name = st.session_state.state["table_name"]
     (col1, _) = st.columns([1, 1])
     (col2, _) = st.columns([1, 1])
@@ -52,8 +56,7 @@ def first_part():
 
     if st.session_state.state["processing"]:
         with st.spinner("Processing your document..."):
-            response = save_document()
-            print("Temp db response:", response)
+            upload_document(table_name=table_name)
 
         st.session_state.state["processing"] = False
         st.session_state.state["chat_ready"] = True
@@ -61,16 +64,14 @@ def first_part():
         st.rerun()
 
 
-def save_document():
-    # Saves the doc to the local machine for snowflake stage
-    table_name = st.session_state.state["table_name"]
-    queries = [
-        f"""
-        CREATE OR REPLACE STAGE {table_name}_docs
-        ENCRYPTION = (TYPE = 'SNOWFLAKE_SSE')
-        DIRECTORY = (ENABLE = TRUE);
-        """
-    ]
+# This is the starter function
+def upload_document(table_name):
+    """
+    Saves the uploaded file to a temporary directory
+    and uploads it to Snowflake transient table.
+    """
+
+    # Gets and save the file on the machine
     streamlit_file = st.session_state.state["file_uploaded"]
     local_file_path = os.path.join("temp_dir", streamlit_file.name)
     os.makedirs("temp_dir", exist_ok=True)
@@ -78,44 +79,80 @@ def save_document():
     with open(local_file_path, "wb") as f:
         f.write(streamlit_file.read())
 
-    absolute_path = os.path.abspath(local_file_path)
-    formatted_path = absolute_path.replace("\\", "/")
+    print(local_file_path)
+    upload_pdf_with_metadata(table_name=table_name, pdf_path=local_file_path)
 
-    execute_query_response = execute_query(
-        table_name=table_name, queries=queries, local_file_path=formatted_path
-    )
-
+    # remove the file from the system
     os.remove(local_file_path)
 
-    return execute_query_response
 
-
-def execute_query(table_name="", queries=[], local_file_path=None):
+def upload_pdf_with_metadata(table_name: str, pdf_path: str):
     try:
-        if not queries:
-            return False
-        cursor = connection_object.cursor()
-        stage_query = queries[0]
-        print(f"Creating stage: {stage_query}")
-        cursor.execute(stage_query)
+        # Create a more detailed table
+        create_table_query = f"""
+            create or replace TRANSIENT TABLE {table_name} ( 
+            FILE_NAME VARCHAR,
+            CHUNK_ID NUMBER,
+            CHUNK_TEXT VARCHAR(16777216),
+            PAGE_NUMBER NUMBER,
+            CHUNK_SIZE NUMBER
+        );
+        """
 
-        if local_file_path:
-            print(f"Uploading file from: {local_file_path}")
-            # Use the put_file method instead of execute for file uploads
-            put_statement = (
-                f"PUT file://{local_file_path} @{table_name}_docs AUTO_COMPRESS = FALSE"
+        cursor.execute(create_table_query)
+
+        # Load and split PDF
+        loader = PyPDFLoader(pdf_path)
+        pages = loader.load()
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        )
+        chunks = text_splitter.split_documents(pages)
+
+        # Insert chunks with metadata
+        file_name = os.path.basename(pdf_path)
+        for chunk_id, chunk in enumerate(chunks):
+            insert_query = f"""
+            INSERT INTO {table_name} 
+            (FILE_NAME, CHUNK_ID, CHUNK_TEXT, PAGE_NUMBER, CHUNK_SIZE)
+            VALUES (%s, %s, %s, %s, %s)
+            """
+            cursor.execute(
+                insert_query,
+                (
+                    file_name,
+                    chunk_id,
+                    chunk.page_content,
+                    chunk.metadata.get("page", 0),
+                    len(chunk.page_content),
+                ),
             )
-            cursor.execute(put_statement)
-            result = cursor.fetchall()
-            print("Upload result:", result)
 
         return True
+
     except Exception as e:
-        print("Error in execute_query:", e)
+        print(f"Error uploading chunks: {str(e)}")
         return False
 
 
-# Generate random table name
+def create_cortex_service(table_name):
+    query = f"""
+    create or replace CORTEX SEARCH SERVICE {table_name}_CS
+    ON chunk_text
+    ATTRIBUTES chunk_text
+    warehouse = COMPUTE_WH
+    TARGET_LAG = '1 minute'
+    as (
+        select chunk_text
+        from {table_name}
+        );
+    """
+    print("Creating cortex service")
+    cortex_search_response = cursor.execute(query)
+    return cortex_search_response
+
+
+# Generate random table names
 def generate_random_string(length=18):
     characters = string.ascii_letters
     random_string = "".join(random.choices(characters, k=length))
@@ -123,12 +160,13 @@ def generate_random_string(length=18):
 
 
 if __name__ == "__main__":
-    # table_name = generate_random_string()
-    table_name = input("table name:").strip()
-    print(
-        execute_query(
-            f"""
-            CREATE TRANSIENT TABLE {table_name} (id NUMBER, creation_date DATE);
-            """
-        )
-    )
+    table_name = generate_random_string()
+    upload_document(table_name=table_name)
+
+    # print(table_name)
+    # response = upload_pdf_with_metadata(
+    #     table_name=table_name, pdf_path="temp_dir/testing_doc.pdf"
+    # )
+    # print("Upload pdf response:", response)
+    # response = create_cortex_service(table_name=table_name)
+    # print("Cortex service response:", response)
