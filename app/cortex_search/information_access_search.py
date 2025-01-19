@@ -61,7 +61,7 @@ def information_access_search(user_question, question_category, selected_langaug
         </data>
         """
 
-        model_response = Complete("mistral-large", prompt)
+        model_response = Complete("mistral-large2", prompt)
         return model_response
     except Exception as e:
         print(e)

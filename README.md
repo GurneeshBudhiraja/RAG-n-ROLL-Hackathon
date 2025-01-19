@@ -19,8 +19,9 @@ Kisan Sahayak is all about empowering farmers in developing countries, especiall
 ## Built With
 
 - **AI and Search:** Snowflake Cortex
-- **Brains of the operation:** Mistral AI
+- **Brains of the operation:** Mistral AI (`mistral-large2`)
 - **Frontend:** Streamlit
+- **Hosting:** Streamlit Community Cloud
 
 ---
 
