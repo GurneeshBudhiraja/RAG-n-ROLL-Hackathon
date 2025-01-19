@@ -26,7 +26,7 @@ def create_snowflake_connection(database: str, cortex_search_service: str):
         connection_object = snowflake.connector.connect(
             user=os.environ.get("SNOWFLAKE_USER"),
             password=os.environ.get("SNOWFLAKE_PASSWORD"),
-            account=os.environ.get("SNOWFLAKE_ACCOUNT"),
+            account="QPB44910",
             warehouse=os.environ.get("WAREHOUSE"),
             database=database,
             schema=os.environ.get("SCHEMA"),

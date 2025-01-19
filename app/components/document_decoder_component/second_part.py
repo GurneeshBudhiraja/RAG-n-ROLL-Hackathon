@@ -1,4 +1,5 @@
 import streamlit as st
+from app.cortex_search.document_decoder_search import document_decoder_search
 
 
 def get_chat_style():
@@ -100,8 +101,12 @@ def second_part():
 
         response_placeholder = st.empty()
 
-        # TODO: testing model response
-        model_response = "This is an interesting question. Let me help you with this!"
+        model_response = document_decoder_search(
+            user_question=user_query,
+            selected_langauge=st.session_state.state["language_selected"],
+            chat_history=st.session_state.state["messages"],
+            cortex_search_service=f"{st.session_state.state['table_name']}_CS",
+        )
 
         st.session_state.state["messages"].append(
             {"role": "ai", "content": model_response}

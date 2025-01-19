@@ -70,6 +70,7 @@ def upload_document(table_name):
     Saves the uploaded file to a temporary directory
     and uploads it to Snowflake transient table.
     """
+    print("TABLE_NAME", table_name)
 
     # Gets and save the file on the machine
     streamlit_file = st.session_state.state["file_uploaded"]
@@ -79,8 +80,16 @@ def upload_document(table_name):
     with open(local_file_path, "wb") as f:
         f.write(streamlit_file.read())
 
-    print(local_file_path)
+    print("================ Uploading file ===========================")
     upload_pdf_with_metadata(table_name=table_name, pdf_path=local_file_path)
+
+    # Creates the cortex search service
+    print("================ creating cortex search service ===========================")
+    cortex_search_response = create_cortex_service(table_name=table_name)
+    print("Cortex search response:", cortex_search_response)
+    print(
+        "================ END :: creating cortex search service :: END ==========================="
+    )
 
     # remove the file from the system
     os.remove(local_file_path)
@@ -139,11 +148,10 @@ def create_cortex_service(table_name):
     query = f"""
     create or replace CORTEX SEARCH SERVICE {table_name}_CS
     ON chunk_text
-    ATTRIBUTES chunk_text
     warehouse = COMPUTE_WH
     TARGET_LAG = '1 minute'
     as (
-        select chunk_text
+        select chunk_text, file_name
         from {table_name}
         );
     """
