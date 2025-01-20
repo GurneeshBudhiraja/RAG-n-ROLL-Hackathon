@@ -13,7 +13,7 @@ Kisan Sahayak is all about empowering farmers in developing countries, especiall
 ## Features
 
 - **Super easy to use:** Easy and intuitive design.
-- **Speaks your language:** Available in English, Hindi, and Bengali.
+- **Speaks your language:** Available in English, Hindi, Bengali, and Marathi.
 - **Get expert advice:** Chat and get personalized answers to your farming questions.
 
 ## Built With

@@ -52,11 +52,10 @@ def get_surprise_content(lang: str):
             cortex_search_service="INFORMATION_ACCESS_SEARCH_SERVICE_CS",
         )
         topic = get_random_topic(topics=topics)
-        
-        
+
         model_response = Complete(
-            "mistral-large2",  # Model used for suprise me content
-            f"Tell me something informative about farming that could help educate the farmers in developing countries.It needs to be informative content related to the {topic} useful for farmers which could enhance the knowledge of the farmers in the {lang} ONLY. At the end return a short heading and short content which is no longer than 2 sentences in the following JSON format: {{'heading':'<model heading response>','content':'<model content response>'}}. Do not add any other text in the response apart from what has been mentioned above.",
+            "mistral-large2",  # mistral-large2 used for suprise me content
+            f"Tell me something informative about farming that could help educate the farmers in developing countries.It needs to be informative content related to the {topic} useful for farmers which could enhance the knowledge of the farmers in the language {lang} ONLY. At the end return a short heading and short content which is no longer than 2 sentences in the following JSON format: {{'heading':'<model heading response>','content':'<model content response>'}}. Do not add any other text in the response apart from what has been mentioned above. FYI, the user wants content in this {lang} language only.",
         )
         modified_model_response = extract_heading_and_content(model_response.strip())
         return modified_model_response

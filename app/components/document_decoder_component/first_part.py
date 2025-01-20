@@ -30,7 +30,7 @@ def FileUploader(selected_language: str):
 
 
 def LanguageSelector(selected_language: str):
-    language_options = ["English", "Hindi", "Bengali"]
+    language_options = ["English", "हिंदी", "বাংলা", "मराठी"]
     selected_language = st.selectbox(
         document_decoder_content[selected_language]["language_selector_label"],
         language_options,
