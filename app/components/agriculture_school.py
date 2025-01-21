@@ -123,7 +123,17 @@ def agriculture_school(selected_language):
     if user_question and not selected_topic:
         st.error(lang_content["error_message"])
     elif user_question and selected_topic:
+        user_question_placeholder = st.empty()
         st.session_state.messages.append({"role": "user", "content": user_question})
+        user_question_placeholder.markdown(
+            f"""
+                <div class="chat-container chat-user">
+                    <div>👨‍💻</div>
+                    <div class="chat-content">{user_question}</div>
+                </div>
+                """,
+            unsafe_allow_html=True,
+        )
 
         response_placeholder = st.empty()
         model_response = ""
