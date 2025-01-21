@@ -4,7 +4,36 @@ from app.utils.suprise_me_util import get_surprise_content
 from app.cortex_search.agriculture_school_search import agriculture_school_search
 
 
+def messages_util():
+    messages = st.session_state["messages"]
+    for message in messages:
+        if message["role"] == "user":
+            st.markdown(
+                f"""
+                <div class="chat-container chat-user">
+                    <div>👨‍💻</div>
+                    <div class="chat-content">{(message["content"])}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                f"""
+                <div class="chat-container chat-ai">
+                    <div>🌾</div>
+                    <div class="chat-content">{message["content"]}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+
 def agriculture_school(selected_language):
+
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
     # Gets the data for the selected language
     st.markdown(
         """
@@ -82,6 +111,7 @@ def agriculture_school(selected_language):
         index=None,
         placeholder=lang_content["topic_selection_placeholder"],
     )
+    messages_util()
     if suprise_me_button:
         educational_content = get_surprise_content(lang_content)
         if not educational_content["heading"] or not educational_content["content"]:
@@ -90,36 +120,10 @@ def agriculture_school(selected_language):
         st.markdown(f"#### {educational_content['heading'].strip()}")
         st.markdown(f"###### {educational_content['content'].strip()}")
 
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
     if user_question and not selected_topic:
         st.error(lang_content["error_message"])
     elif user_question and selected_topic:
         st.session_state.messages.append({"role": "user", "content": user_question})
-
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(
-                    f"""
-                    <div class="chat-container chat-user">
-                        <div>👨‍💻</div>
-                        <div class="chat-content">{(message["content"])}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            else:
-
-                st.markdown(
-                    f"""
-                    <div class="chat-container chat-ai">
-                        <div>🌾</div>
-                        <div class="chat-content">{message["content"]}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
 
         response_placeholder = st.empty()
         model_response = ""

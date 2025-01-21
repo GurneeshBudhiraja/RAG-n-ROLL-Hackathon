@@ -90,6 +90,7 @@ def messages_util():
 
 def second_part(selected_language: str):
     get_chat_style()
+    messages_util()
     # Runs for the very first time
     if st.session_state.state["first_time"]:
         st.session_state.state["messages"].append(
@@ -100,7 +101,7 @@ def second_part(selected_language: str):
                 ],
             }
         )
-        messages_util()
+
         response_placeholder = st.empty()
         model_response = ""
         with st.spinner(document_decoder_content[selected_language]["summary_spinner"]):
@@ -144,7 +145,9 @@ def second_part(selected_language: str):
 
         response_placeholder = st.empty()
         model_response = ""
-        with st.spinner(document_decoder_content[selected_language]["generating_answer_spinner"]):
+        with st.spinner(
+            document_decoder_content[selected_language]["generating_answer_spinner"]
+        ):
             model_response = document_decoder_search(
                 user_question=user_query,
                 selected_langauge=st.session_state.state["language_selected"],
@@ -152,9 +155,7 @@ def second_part(selected_language: str):
                 cortex_search_service=f"{st.session_state.state['table_name']}_CS",
             )
         if not model_response:
-            st.error(
-                document_decoder_content[selected_language]["unable_to_answer"]
-            )
+            st.error(document_decoder_content[selected_language]["unable_to_answer"])
             return
         st.session_state.state["messages"].append(
             {"role": "ai", "content": model_response}

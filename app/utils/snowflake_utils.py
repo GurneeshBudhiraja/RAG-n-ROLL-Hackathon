@@ -30,10 +30,11 @@ def create_snowflake_connection(database: str, cortex_search_service: str):
             warehouse=os.environ.get("WAREHOUSE"),
             database=database,
             schema=os.environ.get("SCHEMA"),
+            client_session_keep_alive=True,
         )
         # Create a Snowpark session from the connection
         active_session = Session.builder.configs(
-            {"connection": connection_object}
+            {"connection": connection_object},
         ).create()
         root = Root(active_session)
 
