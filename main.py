@@ -15,6 +15,7 @@ def main():
         layout="wide",
     )
 
+    print("App started")
     [selected_feature_id, selected_language] = streamlit_sidebar()
 
     if selected_feature_id == "krishi_pathshala":
