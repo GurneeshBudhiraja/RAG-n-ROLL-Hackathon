@@ -90,7 +90,6 @@ def messages_util():
 
 def second_part(selected_language: str):
     get_chat_style()
-    messages_util()
     # Runs for the very first time
     if st.session_state.state["first_time"]:
         st.session_state.state["messages"].append(
